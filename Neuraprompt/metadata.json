@@ -1,0 +1,8 @@
+{
+  "name": "Neura Generator Ai",
+  "description": "Professional AI Prompt Engineering \u0026 Content Generation Suite",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
