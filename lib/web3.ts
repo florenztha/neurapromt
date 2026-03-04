@@ -18,12 +18,6 @@ export async function chargeForPrompt() {
 
   const ethereum = (window as any).ethereum;
 
-  // ask user to confirm intention first
-  const humanConfirm = window.confirm(`Generating a prompt will send ${PAYMENT_AMOUNT} ANKR to the developer's wallet. Do you wish to continue?`);
-  if (!humanConfirm) {
-    throw new Error('User declined payment');
-  }
-
   const provider = new ethers.BrowserProvider(ethereum as any);
   const network = await provider.getNetwork();
 
