@@ -20,7 +20,7 @@ This workspace now includes a lightweight Web3 flow:
 
 ## Why This Project? Unleash Your Creativity with AI & Web3
 
-Neura Generator AI is more than just a tool; it's your **all-in-one creative co-pilot**, seamlessly blending cutting-edge AI generation with the power of Web3. Designed for creators, marketers, and developers, this project offers unparalleled capabilities to transform your ideas into reality.
+Neura Generator AI is more than just a tool; it's your **dappit.io*, seamlessly blending cutting-edge AI generation with the power of Web3. Designed for creators, marketers, and developers, this project offers unparalleled capabilities to transform your ideas into reality.
 
 ### 🚀 **Unmatched AI Power at Your Fingertips**
 Dive into a suite of powerful AI tools, meticulously crafted by expert prompt engineers:
