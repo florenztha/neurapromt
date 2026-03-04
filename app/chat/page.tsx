@@ -5,6 +5,7 @@ import AppLayout from '@/components/AppLayout';
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, Bot, User, Loader2, Sparkles, Trash2 } from 'lucide-react';
 import { smartChat } from '@/lib/ai';
+import { useWallet } from '@/context/WalletContext';
 import ReactMarkdown from 'react-markdown';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
@@ -19,6 +20,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'model', text: t.chat_welcome }
   ]);
+  const { account, connect } = useWallet();
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -38,6 +40,9 @@ export default function ChatPage() {
     setLoading(true);
 
     try {
+      if (!account) {
+        await connect();
+      }
       // Map messages to history format
       const history = messages.map(m => ({
         role: m.role,

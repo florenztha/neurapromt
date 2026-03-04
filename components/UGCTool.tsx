@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { smartGenerateContent, smartChat } from "@/lib/ai";
+import { useWallet } from '@/context/WalletContext';
 import Image from 'next/image';
 
 import { useLanguage } from '@/context/LanguageContext';
@@ -28,6 +29,7 @@ export default function UGCTool({ language = 'English' }: UGCToolProps) {
   const [feature, setFeature] = useState('ugc');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { account, connect } = useWallet();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [quotaError, setQuotaError] = useState(false);
 
@@ -239,7 +241,13 @@ export default function UGCTool({ language = 'English' }: UGCToolProps) {
       }
     } catch (err: any) {
       console.error("Video Prompt Error:", err);
-      const errorMsg = err.message?.toLowerCase() || "";
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('user declined')) {
+        setError('Transaction cancelled, video prompt generation aborted.');
+      } else if (msg.toLowerCase().includes('web3 wallet not detected')) {
+        setError('No Web3 wallet detected – please install MetaMask/OKX and connect.');
+      }
+      const errorMsg = msg.toLowerCase();
       if (errorMsg.includes('429') || errorMsg.includes('quota') || errorMsg.includes('rate exceeded')) {
         setQuotaError(true);
       }
@@ -273,6 +281,12 @@ export default function UGCTool({ language = 'English' }: UGCToolProps) {
     setSelectedImageForVideo(null);
 
     try {
+      // there is a charge step inside smartGenerateContent; if it throws a "User declined" error
+      // we catch that below and treat it specially.
+      if (!account) {
+        // ask user to connect a wallet before trying to charge
+        await connect();
+      }
       const productBase64 = productImage.split(',')[1];
       const modelBase64 = modelImage ? modelImage.split(',')[1] : null;
       const refBase64 = refImage ? refImage.split(',')[1] : null;
@@ -343,17 +357,25 @@ export default function UGCTool({ language = 'English' }: UGCToolProps) {
         generateVideoPrompt();
       }
     } catch (err: any) {
-      const errorMsg = err.message?.toLowerCase() || "";
-      const isQuotaError = errorMsg.includes('429') || 
-                          errorMsg.includes('resource_exhausted') || 
-                          errorMsg.includes('quota') || 
-                          errorMsg.includes('rate exceeded');
-      
-      if (isQuotaError) {
-        setQuotaError(true);
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('user declined')) {
+        // the user cancelled the wallet transaction
+        setError('Transaction cancelled, prompt generation aborted.');
+      } else if (msg.toLowerCase().includes('web3 wallet not detected')) {
+        setError('No Web3 wallet detected – please install MetaMask/OKX and connect.');
+      } else {
+        const errorMsg = msg.toLowerCase();
+        const isQuotaError = errorMsg.includes('429') || 
+                            errorMsg.includes('resource_exhausted') || 
+                            errorMsg.includes('quota') || 
+                            errorMsg.includes('rate exceeded');
+        
+        if (isQuotaError) {
+          setQuotaError(true);
+        }
+        setError(t.descriptionRequiredError);
+        console.error(err);
       }
-      setError(t.descriptionRequiredError);
-      console.error(err);
     } finally {
       setIsGenerating(false);
     }

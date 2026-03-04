@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import { Image as ImageIcon, Sparkles, Upload, RefreshCw, AlertCircle, Download, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { smartGenerateContent } from "@/lib/ai";
+import { useWallet } from '@/context/WalletContext';
 import Image from 'next/image';
 
 import { useLanguage } from '@/context/LanguageContext';
@@ -30,6 +31,7 @@ export default function ImageEditorTool({ language = 'English' }: { language?: '
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [quotaError, setQuotaError] = useState(false);
+  const { account, connect } = useWallet();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const refInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,6 +63,9 @@ export default function ImageEditorTool({ language = 'English' }: { language?: '
     if (!sourceImage || !inputs.instruction.trim() || loading) return;
 
     setLoading(true);
+      if (!account) {
+        await connect();
+      }
     setError(null);
     setQuotaError(false);
     try {

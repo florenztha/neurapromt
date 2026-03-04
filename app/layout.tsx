@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { SidebarProvider } from '@/context/SidebarContext';
+import { WalletProvider } from '@/context/WalletContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -25,7 +26,9 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <body className="bg-[#fdfcfb] text-stone-900 antialiased" suppressHydrationWarning>
         <LanguageProvider>
           <SidebarProvider>
-            {children}
+            <WalletProvider>
+              {children}
+            </WalletProvider>
           </SidebarProvider>
         </LanguageProvider>
       </body>

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
+import WalletButton from './WalletButton';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -186,6 +187,11 @@ export default function Sidebar() {
             >
               ID
             </button>
+          </div>
+
+          {/* Wallet connect/action button */}
+          <div className="ml-4">
+            <WalletButton />
           </div>
 
           {/* Mobile Menu Toggle */}

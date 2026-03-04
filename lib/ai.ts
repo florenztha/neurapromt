@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { chargeForPrompt } from "./web3";
 
 /**
  * Robust wrapper to handle AI generation by calling our internal server-side API.
@@ -10,6 +11,12 @@ export async function smartGenerateContent(params: {
   contents: any;
   config?: any;
 }) {
+  // before doing anything else charge the user for the prompt if we're running
+  // in a browser environment. This will prompt for wallet confirmation.
+  if (typeof window !== 'undefined') {
+    await chargeForPrompt();
+  }
+
   // If the model is a Gemini model, we can call it directly from the client as per guidelines
   if (params.preferredModel.startsWith('gemini-')) {
     const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
@@ -93,6 +100,11 @@ export async function smartChat(params: {
   history?: any[];
   config?: any;
 }) {
+  // charge before chatting as well since it's a prompt generation
+  if (typeof window !== 'undefined') {
+    await chargeForPrompt();
+  }
+
   const messages: any[] = [];
 
   if (params.config?.systemInstruction) {
